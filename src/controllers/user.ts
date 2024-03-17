@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { PATH_EXTERNAL_API } from '../routes/path';
-import { User } from '../types/user';
+import { UpdateUser, User } from '../types/user';
 import axios from '../utils/axios';
 import { db } from '../utils/db';
 import { CustomError } from '../utils/error';
@@ -48,4 +48,58 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createUser, getUsers };
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  const { name, email } = req.body as UpdateUser;
+
+  try {
+    const response = await axios.patch<User>(
+      PATH_EXTERNAL_API.updateUser(id),
+      req.body
+    );
+
+    if (!response.data) {
+      throw new CustomError(`not found user with id: ${id}`, 404);
+    }
+
+    db.user.update({
+      where: {
+        id: id as unknown as number,
+      },
+      data: {
+        email,
+        name,
+      },
+    });
+
+    res.status(200).json(handleResSuccess(response));
+  } catch (error) {
+    console.error("Failed to update user: ", error);
+
+    next(error);
+  }
+};
+
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+
+  try {
+    const response = await axios.delete(PATH_EXTERNAL_API.deleteUser(id));
+
+    if (typeof response.data !== "object") {
+      throw new CustomError(`Can't delete user with id: ${id}`, 400);
+    }
+
+    db.user.delete({
+      where: { id: id as unknown as number },
+    });
+
+    res.sendStatus(204);
+  } catch (error) {
+    console.error("Failed to delete user: ", error);
+
+    next(error);
+  }
+};
+
+export { createUser, deleteUser, getUsers, updateUser };
