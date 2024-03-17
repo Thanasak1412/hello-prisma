@@ -36,8 +36,6 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
       throw new CustomError(`not found post id: ${id}`, 400);
     }
 
-    console.log("userId => ", userId);
-
     await db.post.create({
       data: {
         title,
