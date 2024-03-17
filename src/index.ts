@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser';
 import express, { NextFunction, Request, Response } from 'express';
 
 import { API_VERSION, PORT } from './config';
@@ -7,6 +8,8 @@ import { handleResponseError } from './utils/error';
 
 const app = express();
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(`${API_VERSION}`, router);
 
 app.use(
@@ -14,7 +17,7 @@ app.use(
     err: ErrorInstanceType,
     _req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ) => {
     console.error("Error: ", err);
 
