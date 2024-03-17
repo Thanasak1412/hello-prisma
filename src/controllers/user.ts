@@ -34,10 +34,10 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       throw new CustomError("not found inserted id", 400);
     }
 
-    const { id, email, name } = response.data;
+    const { email, name } = response.data;
 
-    db.user.create({
-      data: { email, id, name },
+    await db.user.create({
+      data: { email, name },
     });
 
     res.status(201).json(handleResSuccess(response));
@@ -62,9 +62,9 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
       throw new CustomError(`not found user with id: ${id}`, 404);
     }
 
-    db.user.update({
+    await db.user.update({
       where: {
-        id: id as unknown as number,
+        id: Number(id),
       },
       data: {
         email,
@@ -90,8 +90,8 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
       throw new CustomError(`Can't delete user with id: ${id}`, 400);
     }
 
-    db.user.delete({
-      where: { id: id as unknown as number },
+    await db.user.delete({
+      where: { id: Number(id) },
     });
 
     res.sendStatus(204);
