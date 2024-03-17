@@ -9,7 +9,7 @@ import { handleResSuccess } from '../utils/response';
 
 const getUsers = async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const response = await axios.get<User[]>(PATH_EXTERNAL_API.getUsers);
+    const response = await axios.get<User[]>(PATH_EXTERNAL_API.user.getUsers);
 
     if (!response.data.length) {
       throw new CustomError("not found users", 404);
@@ -26,7 +26,7 @@ const getUsers = async (_req: Request, res: Response, next: NextFunction) => {
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const response = await axios.post<User>(
-      PATH_EXTERNAL_API.createUser,
+      PATH_EXTERNAL_API.user.createUser,
       req.body
     );
 
@@ -54,7 +54,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const response = await axios.patch<User>(
-      PATH_EXTERNAL_API.updateUser(id),
+      PATH_EXTERNAL_API.user.updateUser(id),
       req.body
     );
 
@@ -84,7 +84,7 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
   try {
-    const response = await axios.delete(PATH_EXTERNAL_API.deleteUser(id));
+    const response = await axios.delete(PATH_EXTERNAL_API.user.deleteUser(id));
 
     if (typeof response.data !== "object") {
       throw new CustomError(`Can't delete user with id: ${id}`, 400);
